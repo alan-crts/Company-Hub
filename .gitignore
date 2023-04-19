@@ -1,0 +1,4 @@
+obj
+.idea/*
+postgres_data
+bin
