@@ -1,0 +1,70 @@
+@model List<Employee>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<h2>Employee list</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                First Name
+            </th>
+            <th>
+                Last Name
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                Landline Phone
+            </th>
+            <th>
+                Mobile Phone
+            </th>
+            <th>
+                Service
+            </th>
+            <th>
+                Site
+            </th>
+            <th>
+                Actions
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Employee employee in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => employee.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => employee.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => employee.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => employee.LandlinePhone)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => employee.MobilePhone)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => employee.Service.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => employee.Site.City)
+                <td>
+                    <a asp-action="" asp-route-id="@employee.Id">Edit</a> |
+                    <a asp-action="" asp-route-id="@employee.Id">Details</a> |
+                    <a asp-action="" asp-route-id="@employee.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

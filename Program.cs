@@ -1,4 +1,6 @@
 using CompanyHub.Context;
+using CompanyHub.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,8 +11,17 @@ builder.Services.AddEntityFrameworkNpgsql()
     .AddDbContext<MainContext>(opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("DbConnection")));
 
 // Add services to the container.
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Home/Login";
+        options.LogoutPath = "/Home/Logout";
+        options.Cookie.Name = "CompanyHub";
+    });
 builder.Services.AddControllersWithViews();
- 
+
+builder.Services.AddScoped<IHashService, HashService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -26,10 +37,12 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
+app.UseCookiePolicy();
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    "default",
+    "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
