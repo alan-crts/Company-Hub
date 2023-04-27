@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyHub.Models;
@@ -35,17 +34,15 @@ public class Employee : BaseEntity
     [DisplayName("Téléphone mobile")]
     public string MobilePhone { get; set; }
 
-    [DataType(DataType.Password)]
-    public string? Password { get; set; }
+    [DataType(DataType.Password)] public string? Password { get; set; }
 
-    [DisplayName("Administrateur")]
-    public bool IsAdmin { get; set; }
-    
-    [DisplayName("Service")]
-    public Service? Service { get; set; }
+    [DisplayName("Administrateur")] public bool IsAdmin { get; set; }
+
+    [DisplayName("Service")] public Service? Service { get; set; }
+
     public int ServiceId { get; set; }
-    
-    [DisplayName("Site")]
-    public Site? Site { get; set; }
+
+    [DisplayName("Site")] public Site? Site { get; set; }
+
     public int SiteId { get; set; }
 }

@@ -65,7 +65,7 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (Employee employee in Model)
+    @foreach (var employee in Model)
     {
         <tr>
             <td class="align-middle text-center">
@@ -115,7 +115,7 @@
         <div class="d-flex justify-content-center">
             <nav aria-label="Page navigation">
                 <ul class="pagination">
-                    @for (int i = 1; i <= ViewBag.PageCount; i++)
+                    @for (var i = 1; i <= ViewBag.PageCount; i++)
                     {
                         <li class="page-item @(ViewBag.Page == i ? "active" : "")">
                             <a class="page-link" href="@Url.Action("Index", "Employee", new { page = i, search = ViewBag.Search, service = ViewBag.Service, site = ViewBag.Site })">@i</a>

@@ -35,12 +35,12 @@ public class MainContext : DbContext
             var now = DateTime.UtcNow; // current datetime
 
             if (entity.State == EntityState.Added) ((BaseEntity)entity.Entity).CreatedAt = now;
-            
+
             ((BaseEntity)entity.Entity).UpdatedAt = now;
         }
     }
 
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Employee>()

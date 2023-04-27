@@ -1,5 +1,8 @@
 using CompanyHub.Context;
 using CompanyHub.Services;
+using CompanyHub.Services.Employee;
+using CompanyHub.Services.Service;
+using CompanyHub.Services.Site;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,8 +24,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IHashService, HashService>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IServiceService, ServiceService>();
+builder.Services.AddScoped<ISiteService, SiteService>();
 
 var app = builder.Build();
+app.UseStatusCodePagesWithReExecute("/error/{0}");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -40,6 +47,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseCookiePolicy();
+
 
 app.MapControllerRoute(
     "default",

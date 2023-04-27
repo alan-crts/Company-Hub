@@ -9,12 +9,12 @@ public class PasswordModification
     [DataType(DataType.Password)]
     [DisplayName("Mot de passe")]
     public string OldPassword { get; set; }
-    
+
     [Required(ErrorMessage = "Le nouveau mot de passe est requis.")]
     [DataType(DataType.Password)]
     [DisplayName("Mot de passe")]
     public string NewPassword { get; set; }
-    
+
     [Required(ErrorMessage = "Le nouveau mot de passe est requis.")]
     [DataType(DataType.Password)]
     [DisplayName("Mot de passe")]

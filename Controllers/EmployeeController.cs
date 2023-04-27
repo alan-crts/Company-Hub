@@ -1,104 +1,76 @@
 using System.Security.Claims;
-using CompanyHub.Context;
 using CompanyHub.Models;
-using CompanyHub.Services;
+using CompanyHub.Services.Employee;
+using CompanyHub.Services.Service;
+using CompanyHub.Services.Site;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CompanyHub.Controllers;
 
 public class EmployeeController : Controller
 {
-    private readonly MainContext _context;
-    private readonly IHashService _hashService;
+    private readonly IEmployeeService _employeeService;
+    private readonly IServiceService _serviceService;
+    private readonly ISiteService _siteService;
 
-    public EmployeeController(MainContext context, IHashService hashService)
+    public EmployeeController(ISiteService siteService, IEmployeeService employeeService,
+        IServiceService serviceService)
     {
-        _context = context;
-        _hashService = hashService;
+        _siteService = siteService;
+        _employeeService = employeeService;
+        _serviceService = serviceService;
     }
 
     [HttpGet]
-    public IActionResult Index(string? search, int page = 1, int? service = null, int? site = null)
+    public async Task<IActionResult> Index(string? search, int page = 1, int? service = null, int? site = null)
     {
-        IQueryable<Employee> employees = _context.Employee
-            .Include(e => e.Service)
-            .Include(e => e.Site);
-        if (search != null)
-        {
-            search = search.Trim();
-            employees = employees.Where(
-                e => e.FirstName.ToLower().Contains(search.ToLower())
-                     || e.LastName.ToLower().Contains(search.ToLower())
-                     || e.Email.ToLower().Contains(search.ToLower())
-                     || e.LandlinePhone.ToLower().Contains(search.ToLower())
-                     || e.MobilePhone.ToLower().Contains(search.ToLower())
-            );
-            
-            ViewBag.Search = search;
-        }
-        else
-        {
-            ViewBag.Search = "";
-        }
-        
-        if(service != null)
-        {
-            employees = employees.Where(e => e.ServiceId == service);
-            ViewBag.Service = service;
-        }
-        else
-        {
-            ViewBag.Service = null;
-        }
-        
-        if(site != null)
-        {
-            employees = employees.Where(e => e.SiteId == site);
-            ViewBag.Site = site;
-        }
-        else
-        {
-            ViewBag.Site = null;
-        }
-        
-        ViewBag.EmployeeCount = employees.Count();
-        employees = employees.Skip((page - 1) * 10).Take(10);
-        
-        ViewBag.PageCount = Math.Ceiling((decimal)ViewBag.EmployeeCount / 10);
-        if (page > ViewBag.PageCount && ViewBag.PageCount != 0) return RedirectToAction("Index", new { page = ViewBag.PageCount, search });
-        
-        List<Service> services = _context.Service.ToList();
-        List<Site> sites = _context.Site.ToList();
-        
-        ViewBag.Services = services;
-        ViewBag.Sites = sites;
+        Dictionary<string, string> filters = new();
+        if (search != null) filters.Add("search", search);
+        if (service != null) filters.Add("service", service.ToString());
+        if (site != null) filters.Add("site", site.ToString());
+
+        ViewBag.EmployeeCount = await _employeeService.CountWithFilter(filters);
+        ViewBag.PageCount = Math.Ceiling((double)ViewBag.EmployeeCount / 10);
+
+        if (page > ViewBag.PageCount && ViewBag.PageCount != 0)
+            return RedirectToAction("Index", new { page = ViewBag.PageCount, search });
+
+        var employees = await _employeeService.ListWithFilter(filters, page);
+
+        ViewBag.Search = search;
+        ViewBag.Service = service;
+        ViewBag.Site = site;
+        ViewBag.Services = await _serviceService.ToList();
+        ViewBag.Sites = await _siteService.ToList();
         ViewBag.Page = page;
-        
-        return View(employees.ToList());
+
+        return View(employees);
     }
 
     [HttpGet]
     [Authorize(Roles = "Admin")]
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        List<Service> services = _context.Service.ToList();
-        List<Site> sites = _context.Site.ToList();
+        var services = await _serviceService.ToList();
+        var sites = await _siteService.ToList();
+
         ViewBag.Services = services;
         ViewBag.Sites = sites;
+
         return View();
     }
 
     [HttpGet]
     [Authorize(Roles = "Admin")]
     [Route("/Employee/Edit/{id}")]
-    public IActionResult Edit(int id)
+    public async Task<IActionResult> Edit(int id)
     {
-        Employee? employee = _context.Employee.Find(id);
+        var employee = await _employeeService.GetById(id);
         if (employee == null) return NotFound();
-        List<Service> services = _context.Service.ToList();
-        List<Site> sites = _context.Site.ToList();
+
+        var services = await _serviceService.ToList();
+        var sites = await _siteService.ToList();
         ViewBag.Services = services;
         ViewBag.Sites = sites;
         return View(employee);
@@ -110,19 +82,18 @@ public class EmployeeController : Controller
     {
         if (!ModelState.IsValid) return Redirect(Request.Headers["Referer"].ToString());
 
-        Employee? existingEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Email == employee.Email);
+        var existingEmployee = await _employeeService.GetByEmail(employee.Email);
         if (existingEmployee != null)
         {
             ModelState.AddModelError("Email", "L'adresse email est déjà utilisée.");
-            List<Service> services = _context.Service.ToList();
-            List<Site> sites = _context.Site.ToList();
+            var services = await _serviceService.ToList();
+            var sites = await _siteService.ToList();
             ViewBag.Services = services;
             ViewBag.Sites = sites;
             return View(employee);
         }
 
-        await _context.Employee.AddAsync(employee);
-        await _context.SaveChangesAsync();
+        await _employeeService.Create(employee);
 
         return RedirectToAction("Index");
     }
@@ -133,23 +104,11 @@ public class EmployeeController : Controller
     {
         if (!ModelState.IsValid) return Redirect(Request.Headers["Referer"].ToString());
 
-        Employee? currentEmployee = await _context.Employee.FindAsync(employee.Id);
+        var currentEmployee = await _employeeService.GetById(employee.Id);
         if (currentEmployee == null) return NotFound();
 
-        currentEmployee.FirstName = employee.FirstName;
-        currentEmployee.LastName = employee.LastName;
-        currentEmployee.Email = employee.Email;
-        currentEmployee.LandlinePhone = employee.LandlinePhone;
-        currentEmployee.MobilePhone = employee.MobilePhone;
-        currentEmployee.ServiceId = employee.ServiceId;
-        currentEmployee.SiteId = employee.SiteId;
-        if (currentEmployee.Id.ToString() != User.FindFirstValue(ClaimTypes.NameIdentifier)) currentEmployee.IsAdmin = employee.IsAdmin;
-        if (employee.Password != null && string.IsNullOrEmpty(currentEmployee.Password))
-            currentEmployee.Password = _hashService.GetHash(employee.Password);
-        
-        _context.Employee.Update(currentEmployee);
-        
-        await _context.SaveChangesAsync();
+        await _employeeService.Update(employee);
+
         return RedirectToAction("Index");
     }
 
@@ -157,22 +116,19 @@ public class EmployeeController : Controller
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
-        Employee? employee = await _context.Employee.FindAsync(id);
+        var employee = await _employeeService.GetById(id);
         if (employee == null) return NotFound();
-        
+
         if (employee.Id.ToString() == User.FindFirstValue(ClaimTypes.NameIdentifier)) return RedirectToAction("Index");
-        
-        _context.Employee.Remove(employee);
-        await _context.SaveChangesAsync();
-        
+
+        await _employeeService.Delete(employee);
+
         return RedirectToAction("Index");
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> CheckEmail(string email, int id)
     {
-        Employee? employee = await _context.Employee.FirstOrDefaultAsync(e => e.Email == email && e.Id != id);
-        if (employee != null) return Json(false);
-        return Json(true);
+        return Json(await _employeeService.CheckEmail(email, id));
     }
 }

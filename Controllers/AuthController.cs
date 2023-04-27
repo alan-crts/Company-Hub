@@ -19,10 +19,10 @@ public class AuthController : Controller
         _context = context;
         _hashService = hashService;
     }
-    
+
     public IActionResult Login()
     {
-        if(User.Identity is { IsAuthenticated: true }) return RedirectToAction("Index", "Home");
+        if (User.Identity is { IsAuthenticated: true }) return RedirectToAction("Index", "Home");
         return View();
     }
 
@@ -31,7 +31,7 @@ public class AuthController : Controller
     {
         if (!ModelState.IsValid) return View(login);
 
-        Employee? user = await _context.Employee.FirstOrDefaultAsync(u =>
+        var user = await _context.Employee.FirstOrDefaultAsync(u =>
             u.Email == login.Email && u.Password == _hashService.GetHash(login.Password));
         if (user == null)
         {
@@ -42,10 +42,10 @@ public class AuthController : Controller
 
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.FirstName + " " + user.LastName),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.IsAdmin ? "Admin" : "Visitor")
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Name, user.FirstName + " " + user.LastName),
+            new(ClaimTypes.Email, user.Email),
+            new(ClaimTypes.Role, user.IsAdmin ? "Admin" : "Visitor")
         };
 
         var claimsIdentity = new ClaimsIdentity(
@@ -62,7 +62,7 @@ public class AuthController : Controller
             CookieAuthenticationDefaults.AuthenticationScheme,
             principal,
             props).Wait();
-        
+
         return RedirectToAction("Index", "Home");
     }
 
@@ -72,18 +72,18 @@ public class AuthController : Controller
         HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
         return RedirectToAction("Login", "Auth");
     }
-    
+
     public IActionResult PasswordModification()
     {
         return View();
     }
-    
+
     [HttpPost]
     public IActionResult PasswordModification([FromForm] PasswordModification passwordModification)
     {
         if (!ModelState.IsValid) return Redirect(Request.Headers["Referer"].ToString());
 
-        Employee? currentEmployee = _context.Employee.Find(int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)));
+        var currentEmployee = _context.Employee.Find(int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)));
         if (currentEmployee == null) return NotFound();
 
         if (currentEmployee.Password != _hashService.GetHash(passwordModification.OldPassword))
