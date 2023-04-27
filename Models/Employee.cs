@@ -20,6 +20,7 @@ public class Employee : BaseEntity
     [Required(ErrorMessage = "L'adresse email est requise.")]
     [EmailAddress(ErrorMessage = "L'adresse email est invalide.")]
     [DisplayName("Adresse email")]
+    [Remote("CheckEmail", "Employee", AdditionalFields = "Id", ErrorMessage = "L'adresse email est déjà utilisée.")]
     public string Email { get; set; }
 
     [Required(ErrorMessage = "Le numéro de téléphone fixe est requis.")]

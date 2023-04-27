@@ -81,7 +81,7 @@ public class EmployeeController : Controller
 
     [HttpGet]
     [Authorize(Roles = "Admin")]
-    public IActionResult Add()
+    public IActionResult Create()
     {
         List<Service> services = _context.Service.ToList();
         List<Site> sites = _context.Site.ToList();
@@ -113,8 +113,12 @@ public class EmployeeController : Controller
         Employee? existingEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Email == employee.Email);
         if (existingEmployee != null)
         {
-            ModelState.AddModelError("Email", "This email address is already in use.");
-            return Redirect(Request.Headers["Referer"].ToString());
+            ModelState.AddModelError("Email", "L'adresse email est déjà utilisée.");
+            List<Service> services = _context.Service.ToList();
+            List<Site> sites = _context.Site.ToList();
+            ViewBag.Services = services;
+            ViewBag.Sites = sites;
+            return View(employee);
         }
 
         await _context.Employee.AddAsync(employee);
@@ -163,5 +167,13 @@ public class EmployeeController : Controller
         await _context.SaveChangesAsync();
         
         return RedirectToAction("Index");
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> CheckEmail(string email, int id)
+    {
+        Employee? employee = await _context.Employee.FirstOrDefaultAsync(e => e.Email == email && e.Id != id);
+        if (employee != null) return Json(false);
+        return Json(true);
     }
 }

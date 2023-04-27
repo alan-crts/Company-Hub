@@ -9,28 +9,7 @@
 <h2>Liste des employées</h2>
 <form method="get" asp-action="Index" asp-controller="Employee">
     <div class="input-group mb-3">
-        @if(ViewBag.Service != null)
-        {
-            <input type="hidden" name="service" value="@ViewBag.Service">
-        }
-        @if(ViewBag.Site != null)
-        {
-            <input type="hidden" name="site" value="@ViewBag.Site">
-        }
-        <input type="text" class="form-control" placeholder="Chercher via un nom, une adresse mail ou un numéro de téléphone" aria-label="Search" aria-describedby="button-addon2" name="search" value="@ViewBag.Search">
-        <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Chercher</button>
-    </div>
-</form>
-@if (User.IsInRole("Admin"))
-{
-    <a asp-action="Add" asp-controller="Employee" class="btn btn-primary">Créer</a>
-}
-<form method="get" asp-action="Index" asp-controller="Employee">
-    @if(ViewBag.Search != null)
-    {
-        <input type="hidden" name="search" value="@ViewBag.Search">
-    }
-    <div class="input-group mb-3">
+        <input type="text" class="form-control w-50" placeholder="Chercher via un nom, une adresse mail ou un numéro de téléphone" aria-label="Search" aria-describedby="button-addon2" name="search" value="@ViewBag.Search">
         <select class="form-select" aria-label="Default select example" name="service">
             <option value="">Choisir un service</option>
             @foreach (Service service in ViewBag.Services)
@@ -45,9 +24,13 @@
                 <option value="@site.Id" selected="@(ViewBag.Site == site.Id)">@site.City</option>
             }
         </select>
-        <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Filtrer</button>
+        <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Chercher</button>
     </div>
 </form>
+@if (User.IsInRole("Admin"))
+{
+    <a asp-action="Create" asp-controller="Employee" class="btn btn-primary">Créer</a>
+}
 
 <table class="table">
     <thead>
@@ -128,7 +111,7 @@
 
 <div class="row">
     <div class="col-12">
-        <span class="text-muted">Nombre d'employées: @ViewBag.EmployeeCount</span>
+        <span class="text-muted">Nombre d'employées trouvés : @ViewBag.EmployeeCount</span>
         <div class="d-flex justify-content-center">
             <nav aria-label="Page navigation">
                 <ul class="pagination">
