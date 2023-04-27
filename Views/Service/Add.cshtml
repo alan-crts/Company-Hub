@@ -1,0 +1,25 @@
+@model Service
+
+@{
+    ViewBag.Title = "Ajout d'un service";
+    Layout = "_Layout";
+}
+
+@section scripts{
+    <partial name="_ValidationScriptsPartial"/>
+}
+
+<h2>Ajout d'un service</h2>
+<a asp-action="Index" asp-controller="Service" class="btn btn-primary">
+    Retour
+</a>
+<div class="w-50 container">
+    <form method="post" asp-action="Create" asp-controller="Service">
+        <div class="form-group mb-3">
+            <label asp-for="Name">Nom</label>
+            <input asp-for="Name" class="form-control"/>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+    </form>
+</div>

@@ -2,44 +2,76 @@
 @model List<Employee>
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Liste des employées";
     Layout = "_Layout";
 }
 
-<h2>Employee list</h2>
+<h2>Liste des employées</h2>
 <form method="get" asp-action="Index" asp-controller="Employee">
     <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="button-addon2" name="search" value="@ViewBag.Search">
-        <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
+        @if(ViewBag.Service != null)
+        {
+            <input type="hidden" name="service" value="@ViewBag.Service">
+        }
+        @if(ViewBag.Site != null)
+        {
+            <input type="hidden" name="site" value="@ViewBag.Site">
+        }
+        <input type="text" class="form-control" placeholder="Chercher via un nom, une adresse mail ou un numéro de téléphone" aria-label="Search" aria-describedby="button-addon2" name="search" value="@ViewBag.Search">
+        <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Chercher</button>
     </div>
 </form>
 @if (User.IsInRole("Admin"))
 {
-    <a asp-action="Add" asp-controller="Employee" class="btn btn-primary">Create</a>
+    <a asp-action="Add" asp-controller="Employee" class="btn btn-primary">Créer</a>
 }
+<form method="get" asp-action="Index" asp-controller="Employee">
+    @if(ViewBag.Search != null)
+    {
+        <input type="hidden" name="search" value="@ViewBag.Search">
+    }
+    <div class="input-group mb-3">
+        <select class="form-select" aria-label="Default select example" name="service">
+            <option value="">Choisir un service</option>
+            @foreach (Service service in ViewBag.Services)
+            {
+                <option value="@service.Id" selected="@(ViewBag.Service == service.Id)">@service.Name</option>
+            }
+        </select>
+        <select class="form-select" aria-label="Default select example" name="site">
+            <option value="">Choisir un site</option>
+            @foreach (Site site in ViewBag.Sites)
+            {
+                <option value="@site.Id" selected="@(ViewBag.Site == site.Id)">@site.City</option>
+            }
+        </select>
+        <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Filtrer</button>
+    </div>
+</form>
+
 <table class="table">
     <thead>
     <tr>
         <th>
-            First Name
+            @Html.DisplayNameForInnerType((Employee e) => e.FirstName)
         </th>
         <th>
-            Last Name
+            @Html.DisplayNameForInnerType((Employee e) => e.LastName)
         </th>
         <th>
-            Email
+            @Html.DisplayNameForInnerType((Employee e) => e.Email)
         </th>
         <th>
-            Landline Phone
+            @Html.DisplayNameForInnerType((Employee e) => e.LandlinePhone)
         </th>
         <th>
-            Mobile Phone
+            @Html.DisplayNameForInnerType((Employee e) => e.MobilePhone)
         </th>
         <th>
-            Service
+            @Html.DisplayNameForInnerType((Employee e) => e.Service)
         </th>
         <th>
-            Site
+            @Html.DisplayNameForInnerType((Employee e) => e.Site)
         </th>
         @if (User.IsInRole("Admin"))
         {
@@ -73,10 +105,10 @@
             </td>
             <td class="align-middle">
                 @Html.DisplayFor(modelItem => employee.Site.City)
-            </td>
+            </td >
             @if (User.IsInRole("Admin"))
             {
-                <td>
+                <td class="align-middle">
                     <form method="post" asp-action="Delete" asp-route-id="@employee.Id">
                         <div class="btn-group" role="group">
                             <a asp-action="Edit" class="btn btn-success" asp-route-id="@employee.Id">
@@ -93,3 +125,21 @@
     }
     </tbody>
 </table>
+
+<div class="row">
+    <div class="col-12">
+        <span class="text-muted">Nombre d'employées: @ViewBag.EmployeeCount</span>
+        <div class="d-flex justify-content-center">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    @for (int i = 1; i <= ViewBag.PageCount; i++)
+                    {
+                        <li class="page-item @(ViewBag.Page == i ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("Index", "Employee", new { page = i, search = ViewBag.Search, service = ViewBag.Service, site = ViewBag.Site })">@i</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>

@@ -43,6 +43,6 @@ app.UseCookiePolicy();
 
 app.MapControllerRoute(
     "default",
-    "{controller=Home}/{action=Index}/{id?}");
+    "{controller=Home}/{action=Index}/{page?}");
 
 app.Run();

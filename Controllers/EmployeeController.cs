@@ -19,40 +19,64 @@ public class EmployeeController : Controller
         _hashService = hashService;
     }
 
-    //return list of employees
-    public IActionResult Index()
+    [HttpGet]
+    public IActionResult Index(string? search, int page = 1, int? service = null, int? site = null)
     {
-        List<Employee> employees;
-        if (Request.QueryString.Value.Contains("search"))
+        IQueryable<Employee> employees = _context.Employee
+            .Include(e => e.Service)
+            .Include(e => e.Site);
+        if (search != null)
         {
-            string search = Request.Query["search"];
-            employees = _context.Employee
-                .Include(e => e.Service)
-                .Include(e => e.Site)
-                .Where(
-                    e => e.FirstName.ToLower().Contains(search.ToLower())
-                         || e.LastName.ToLower().Contains(search.ToLower())
-                         || e.Email.ToLower().Contains(search.ToLower())
-                         || e.LandlinePhone.ToLower().Contains(search.ToLower())
-                         || e.MobilePhone.ToLower().Contains(search.ToLower())
-                )
-                .ToList();
-            @ViewBag.Search = search;
+            search = search.Trim();
+            employees = employees.Where(
+                e => e.FirstName.ToLower().Contains(search.ToLower())
+                     || e.LastName.ToLower().Contains(search.ToLower())
+                     || e.Email.ToLower().Contains(search.ToLower())
+                     || e.LandlinePhone.ToLower().Contains(search.ToLower())
+                     || e.MobilePhone.ToLower().Contains(search.ToLower())
+            );
+            
+            ViewBag.Search = search;
         }
         else
         {
-            employees = _context.Employee
-                .Include(e => e.Service)
-                .Include(e => e.Site)
-                .ToList();
-            @ViewBag.Search = "";
+            ViewBag.Search = "";
         }
-
+        
+        if(service != null)
+        {
+            employees = employees.Where(e => e.ServiceId == service);
+            ViewBag.Service = service;
+        }
+        else
+        {
+            ViewBag.Service = null;
+        }
+        
+        if(site != null)
+        {
+            employees = employees.Where(e => e.SiteId == site);
+            ViewBag.Site = site;
+        }
+        else
+        {
+            ViewBag.Site = null;
+        }
+        
+        ViewBag.EmployeeCount = employees.Count();
+        employees = employees.Skip((page - 1) * 10).Take(10);
+        
+        ViewBag.PageCount = Math.Ceiling((decimal)ViewBag.EmployeeCount / 10);
+        if (page > ViewBag.PageCount && ViewBag.PageCount != 0) return RedirectToAction("Index", new { page = ViewBag.PageCount, search });
+        
         List<Service> services = _context.Service.ToList();
         List<Site> sites = _context.Site.ToList();
+        
         ViewBag.Services = services;
         ViewBag.Sites = sites;
-        return View(employees);
+        ViewBag.Page = page;
+        
+        return View(employees.ToList());
     }
 
     [HttpGet]
@@ -68,9 +92,10 @@ public class EmployeeController : Controller
 
     [HttpGet]
     [Authorize(Roles = "Admin")]
+    [Route("/Employee/Edit/{id}")]
     public IActionResult Edit(int id)
     {
-        Employee employee = _context.Employee.Find(id);
+        Employee? employee = _context.Employee.Find(id);
         if (employee == null) return NotFound();
         List<Service> services = _context.Service.ToList();
         List<Site> sites = _context.Site.ToList();
@@ -92,7 +117,7 @@ public class EmployeeController : Controller
             return Redirect(Request.Headers["Referer"].ToString());
         }
 
-        _context.Employee.Add(employee);
+        await _context.Employee.AddAsync(employee);
 
         await _context.SaveChangesAsync();
 
@@ -105,7 +130,7 @@ public class EmployeeController : Controller
     {
         if (!ModelState.IsValid) return Redirect(Request.Headers["Referer"].ToString());
 
-        Employee currentEmployee = await _context.Employee.FindAsync(employee.Id);
+        Employee? currentEmployee = await _context.Employee.FindAsync(employee.Id);
         if (currentEmployee == null) return NotFound();
 
         currentEmployee.FirstName = employee.FirstName;
@@ -115,10 +140,12 @@ public class EmployeeController : Controller
         currentEmployee.MobilePhone = employee.MobilePhone;
         currentEmployee.ServiceId = employee.ServiceId;
         currentEmployee.SiteId = employee.SiteId;
-        if (currentEmployee.Id != employee.Id) currentEmployee.IsAdmin = employee.IsAdmin;
+        if (currentEmployee.Id.ToString() != User.FindFirstValue(ClaimTypes.NameIdentifier)) currentEmployee.IsAdmin = employee.IsAdmin;
         if (employee.Password != null && string.IsNullOrEmpty(currentEmployee.Password))
             currentEmployee.Password = _hashService.GetHash(employee.Password);
+        
         _context.Employee.Update(currentEmployee);
+        
         await _context.SaveChangesAsync();
         return RedirectToAction("Index");
     }
@@ -127,11 +154,14 @@ public class EmployeeController : Controller
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
-        Employee employee = await _context.Employee.FindAsync(id);
+        Employee? employee = await _context.Employee.FindAsync(id);
         if (employee == null) return NotFound();
+        
         if (employee.Id.ToString() == User.FindFirstValue(ClaimTypes.NameIdentifier)) return RedirectToAction("Index");
+        
         _context.Employee.Remove(employee);
         await _context.SaveChangesAsync();
+        
         return RedirectToAction("Index");
     }
 }
