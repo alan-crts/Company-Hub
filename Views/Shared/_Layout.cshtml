@@ -27,7 +27,7 @@
                         <a class="nav-link text-dark" asp-area="" asp-controller="Service" asp-action="Index">Services</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Site" asp-action="Index">Sites</a>
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Site" asp-action="Index">Sites</a>
                 </ul>
                 @if (User.Identity.IsAuthenticated)
                 {
@@ -37,7 +37,10 @@
                                 <i class="bi bi-person"></i>
                                 @User.Identity.Name
                             </a>
-                            <ul class="dropdown-menu">
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Auth" asp-action="PasswordModification">Modifier mon mot de passe</a>
+                                </li>
                                 <li>
                                     <form method="post" asp-controller="Auth" asp-action="Logout">
                                         <button type="submit" class="dropdown-item">Déconnexion</button>

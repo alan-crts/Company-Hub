@@ -56,7 +56,7 @@ public class SiteController : Controller
     
     [HttpGet]
     [Authorize(Roles = "Admin")]
-    public IActionResult Add()
+    public IActionResult Create()
     {
         return View();
     }
@@ -76,7 +76,7 @@ public class SiteController : Controller
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create(Site site)
     {
-        if (!ModelState.IsValid) return RedirectToAction("Add");
+        if (!ModelState.IsValid) return View(site);
         
         await _context.Site.AddAsync(site);
         await _context.SaveChangesAsync();

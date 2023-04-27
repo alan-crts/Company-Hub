@@ -29,36 +29,36 @@
 </form>
 @if (User.IsInRole("Admin"))
 {
-    <a asp-action="Create" asp-controller="Employee" class="btn btn-primary">Créer</a>
+    <a asp-action="Create" asp-controller="Employee" class="btn btn-primary">Ajouter un employé</a>
 }
 
 <table class="table">
     <thead>
     <tr>
-        <th>
+        <th class="text-center">
             @Html.DisplayNameForInnerType((Employee e) => e.FirstName)
         </th>
-        <th>
+        <th class="text-center">
             @Html.DisplayNameForInnerType((Employee e) => e.LastName)
         </th>
-        <th>
+        <th class="text-center">
             @Html.DisplayNameForInnerType((Employee e) => e.Email)
         </th>
-        <th>
+        <th class="text-center">
             @Html.DisplayNameForInnerType((Employee e) => e.LandlinePhone)
         </th>
-        <th>
+        <th class="text-center">
             @Html.DisplayNameForInnerType((Employee e) => e.MobilePhone)
         </th>
-        <th>
+        <th class="text-center">
             @Html.DisplayNameForInnerType((Employee e) => e.Service)
         </th>
-        <th>
+        <th class="text-center">
             @Html.DisplayNameForInnerType((Employee e) => e.Site)
         </th>
         @if (User.IsInRole("Admin"))
         {
-            <th>
+            <th class="text-end">
                 Actions
             </th>
         }
@@ -68,30 +68,30 @@
     @foreach (Employee employee in Model)
     {
         <tr>
-            <td class="align-middle">
+            <td class="align-middle text-center">
                 @Html.DisplayFor(modelItem => employee.FirstName)
             </td>
-            <td class="align-middle">
+            <td class="align-middle text-center">
                 @Html.DisplayFor(modelItem => employee.LastName)
             </td>
-            <td class="align-middle">
+            <td class="align-middle text-center">
                 @Html.DisplayFor(modelItem => employee.Email)
             </td>
-            <td class="align-middle">
+            <td class="align-middle text-center">
                 @Html.DisplayFor(modelItem => employee.LandlinePhone)
             </td>
-            <td class="align-middle">
+            <td class="align-middle text-center">
                 @Html.DisplayFor(modelItem => employee.MobilePhone)
             </td>
-            <td class="align-middle">
+            <td class="align-middle text-center">
                 @Html.DisplayFor(modelItem => employee.Service.Name)
             </td>
-            <td class="align-middle">
+            <td class="align-middle text-center">
                 @Html.DisplayFor(modelItem => employee.Site.City)
             </td >
             @if (User.IsInRole("Admin"))
             {
-                <td class="align-middle">
+                <td class="align-middle text-end">
                     <form method="post" asp-action="Delete" asp-route-id="@employee.Id">
                         <div class="btn-group" role="group">
                             <a asp-action="Edit" class="btn btn-success" asp-route-id="@employee.Id">

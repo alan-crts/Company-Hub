@@ -122,7 +122,6 @@ public class EmployeeController : Controller
         }
 
         await _context.Employee.AddAsync(employee);
-
         await _context.SaveChangesAsync();
 
         return RedirectToAction("Index");

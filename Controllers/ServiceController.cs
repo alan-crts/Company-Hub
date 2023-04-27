@@ -54,7 +54,7 @@ public class ServiceController : Controller
     
     [HttpGet]
     [Authorize(Roles = "Admin")]
-    public IActionResult Add()
+    public IActionResult Create()
     {
         return View();
     }
@@ -74,7 +74,7 @@ public class ServiceController : Controller
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create(Service service)
     {
-        if (!ModelState.IsValid) return RedirectToAction("Add");
+        if (!ModelState.IsValid) return View(service);
         
         await _context.Service.AddAsync(service);
         await _context.SaveChangesAsync();

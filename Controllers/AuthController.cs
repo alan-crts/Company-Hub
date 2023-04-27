@@ -22,7 +22,7 @@ public class AuthController : Controller
     
     public IActionResult Login()
     {
-        if(User.Identity is { IsAuthenticated: true }) return RedirectToAction("Index", "Employee");
+        if(User.Identity is { IsAuthenticated: true }) return RedirectToAction("Index", "Home");
         return View();
     }
 
@@ -33,7 +33,12 @@ public class AuthController : Controller
 
         Employee? user = await _context.Employee.FirstOrDefaultAsync(u =>
             u.Email == login.Email && u.Password == _hashService.GetHash(login.Password));
-        if (user == null) return RedirectToAction("Login", "Auth");
+        if (user == null)
+        {
+            ModelState.AddModelError("Email", "L'adresse email ou le mot de passe est incorrect.");
+            ModelState.AddModelError("Password", "L'adresse email ou le mot de passe est incorrect.");
+            return View(login);
+        }
 
         var claims = new List<Claim>
         {
@@ -57,17 +62,39 @@ public class AuthController : Controller
             CookieAuthenticationDefaults.AuthenticationScheme,
             principal,
             props).Wait();
-
-        if (Request.Query.ContainsKey("ReturnUrl"))
-            return Redirect(Request.Query["ReturnUrl"]!);
-
-        return RedirectToAction("Index", "Employee");
+        
+        return RedirectToAction("Index", "Home");
     }
 
     [HttpPost]
     public IActionResult Logout()
     {
         HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
-        return Redirect(Request.Headers["Referer"].ToString());
+        return RedirectToAction("Login", "Auth");
+    }
+    
+    public IActionResult PasswordModification()
+    {
+        return View();
+    }
+    
+    [HttpPost]
+    public IActionResult PasswordModification([FromForm] PasswordModification passwordModification)
+    {
+        if (!ModelState.IsValid) return Redirect(Request.Headers["Referer"].ToString());
+
+        Employee? currentEmployee = _context.Employee.Find(int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)));
+        if (currentEmployee == null) return NotFound();
+
+        if (currentEmployee.Password != _hashService.GetHash(passwordModification.OldPassword))
+        {
+            ModelState.AddModelError("OldPassword", "L'ancien mot de passe est incorrect.");
+            return View(passwordModification);
+        }
+
+        currentEmployee.Password = _hashService.GetHash(passwordModification.NewPassword);
+        _context.Employee.Update(currentEmployee);
+        _context.SaveChanges();
+        return RedirectToAction("Index", "Home");
     }
 }

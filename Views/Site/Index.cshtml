@@ -15,57 +15,59 @@
 
 @if (User.IsInRole("Admin"))
 {
-    <a asp-action="Add" asp-controller="Site" class="btn btn-primary">Créer</a>
+    <a asp-action="Create" asp-controller="Site" class="btn btn-primary">Ajouter un site</a>
 }
 
 <table class="table">
     <thead>
     <tr>
-        <th>
+        <th class="text-center">
             @Html.DisplayNameForInnerType((Site s) => s.City)
         </th>
-        <th>
+        <th class="text-center">
             @Html.DisplayNameForInnerType((Site s) => s.Description)
         </th>
-        <th>
+        <th class="text-center">
             Nombre d'employés
         </th>
-        @if (User.IsInRole("Admin"))
-        {
-            <th>
-                Actions
-            </th>
-        }
+        <th class="text-end">
+            Actions
+        </th>
     </tr>
     </thead>
     <tbody>
     @foreach (Site site in Model)
     {
         <tr>
-            <td class="align-middle">
+            <td class="align-middle text-center">
                 @Html.DisplayFor(modelItem => site.City)
             </td>
-            <td class="align-middle">
+            <td class="align-middle text-center">
                 @Html.DisplayFor(modelItem => site.Description)
             </td>
-            <td class="align-middle">
-            @Html.DisplayFor(modelItem => site.Employees.Count)
+            <td class="align-middle text-center">
+                @Html.DisplayFor(modelItem => site.Employees.Count)
             </td>
-            @if (User.IsInRole("Admin"))
-            {
-                <td class="align-middle">
-                    <form method="post" asp-action="Delete" asp-route-id="@site.Id">
-                        <div class="btn-group" role="group">
-                            <a asp-action="Edit" class="btn btn-success" asp-route-id="@site.Id">
-                                <i class="bi bi-pencil-fill"></i>
-                            </a>
-                            <button type="submit" class="btn btn-danger" @(site.Employees?.Count > 0 ? "disabled" : "")>
-                                <i class="bi bi-trash-fill"></i>
-                            </button>
-                        </div>
-                    </form>
-                </td>
-            }
+            <td class="align-middle">
+                <div class="d-flex justify-content-end">
+                    <a asp-action="Index" class="btn btn-primary me-2" asp-controller="Employee" asp-route-site="@site.Id">
+                        <i class="bi bi-eye-fill"></i>
+                    </a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <form method="post" asp-action="Delete" asp-route-id="@site.Id">
+                            <div class="btn-group" role="group">
+                                <a asp-action="Edit" class="btn btn-success" asp-route-id="@site.Id">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+                                <button type="submit" class="btn btn-danger" @(site.Employees?.Count > 0 ? "disabled" : "")>
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </td>
         </tr>
     }
     </tbody>
