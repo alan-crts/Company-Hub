@@ -1,0 +1,63 @@
+@model Employee
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+@section scripts{
+    <partial name="_ValidationScriptsPartial"/>
+}
+
+<h2>Create Employee</h2>
+<a asp-action="Index" asp-controller="Employee" class="btn btn-primary">Back to List</a>
+<div class="w-50 container">
+    <form method="post" asp-action="Create" asp-controller="Employee">
+        <div class="mb-3">
+            <label class="form-label" for="FirstName">First Name</label>
+            <input type="text" class="form-control" name="FirstName" asp-for="FirstName"/>
+            <span class="text-danger" asp-validation-for="FirstName"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="LastName">Last Name</label>
+            <input type="text" class="form-control" name="LastName" asp-for="LastName"/>
+            <span class="text-danger" asp-validation-for="LastName"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="Email">Email</label>
+            <input type="text" class="form-control" name="Email" asp-for="Email"/>
+            <span class="text-danger" asp-validation-for="Email"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="LandlinePhone">Landline Phone</label>
+            <input type="text" class="form-control" name="LandlinePhone" asp-for="LandlinePhone"/>
+            <span class="text-danger" asp-validation-for="LandlinePhone"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="MobilePhone">Mobile Phone</label>
+            <input type="text" class="form-control" name="MobilePhone" asp-for="MobilePhone"/>
+            <span class="text-danger" asp-validation-for="MobilePhone"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="ServiceId">Service</label>
+            <select name="ServiceId" class="form-control" asp-for="ServiceId">
+                @foreach (Service service in ViewBag.Services)
+                {
+                    <option value="@service.Id">@service.Name</option>
+                }
+            </select>
+            <span class="text-danger" asp-validation-for="ServiceId"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="SiteId">Site</label>
+            <select name="SiteId" class="form-control" asp-for="SiteId">
+                @foreach (Site site in ViewBag.Sites)
+                {
+                    <option value="@site.Id">@site.City</option>
+                }
+            </select>
+            <span class="text-danger" asp-validation-for="SiteId"></span>
+        </div>
+        <input type="submit" class="btn btn-primary" value="Save"/>
+    </form>
+</div>

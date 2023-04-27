@@ -1,0 +1,81 @@
+@using Microsoft.IdentityModel.Tokens
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Employee
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+@section scripts{
+    <partial name="_ValidationScriptsPartial"/>
+}
+
+<h2>Edit Employee</h2>
+<a asp-action="Index" asp-controller="Employee" class="btn btn-primary">Back to List</a>
+<div class="w-50 container">
+    <form method="post" asp-action="Update" asp-controller="Employee">
+        <input type="hidden" asp-for="Id"/>
+        <div class="mb-3">
+            <label class="form-label" for="FirstName">First Name</label>
+            <input class="form-control" name="FirstName" asp-for="FirstName"/>
+            <span class="text-danger" asp-validation-for="FirstName"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="LastName">Last Name</label>
+            <input class="form-control" asp-for="LastName"/>
+            <span class="text-danger" asp-validation-for="LastName"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="Email">Email</label>
+            <input class="form-control" asp-for="Email"/>
+            <span class="text-danger" asp-validation-for="Email"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="LandlinePhone">Landline Phone</label>
+            <input class="form-control" asp-for="LandlinePhone"/>
+            <span class="text-danger" asp-validation-for="LandlinePhone"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="MobilePhone">Mobile Phone</label>
+            <input class="form-control" asp-for="MobilePhone"/>
+            <span class="text-danger" asp-validation-for="MobilePhone"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="ServiceId">Service</label>
+            <select class="form-control" asp-for="ServiceId">
+                @foreach (Service service in ViewBag.Services)
+                {
+                    <option value="@service.Id">@service.Name</option>
+                }
+            </select>
+            <span class="text-danger" asp-validation-for="ServiceId"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="SiteId">Site</label>
+            <select class="form-control" asp-for="SiteId">
+                @foreach (Site site in ViewBag.Sites)
+                {
+                    <option value="@site.Id">@site.City</option>
+                }
+            </select>
+            <span class="text-danger" asp-validation-for="SiteId"></span>
+        </div>
+        @if (Model.Password.IsNullOrEmpty())
+        {
+            <div class="mb-3">
+                <label class="form-label" for="Password">L'employé n'a pas de mot de passe<br/>Password:</label>
+                <input class="form-control" type="password" asp-for="Password"/>
+                <span class="text-danger" asp-validation-for="Password"></span>
+            </div>
+        }
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" asp-for="IsAdmin" disabled="@(Model.Id.ToString() == User.FindFirstValue(ClaimTypes.NameIdentifier))"/>
+            <label class="form-check-label" for="IsAdmin">
+                Administrateur
+            </label>
+        </div>
+        <input type="submit" class="btn btn-primary" value="Save"/>
+    </form>
+</div>

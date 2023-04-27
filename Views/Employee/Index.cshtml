@@ -1,3 +1,4 @@
+@using System.Security.Claims
 @model List<Employee>
 
 @{
@@ -6,65 +7,89 @@
 }
 
 <h2>Employee list</h2>
+<form method="get" asp-action="Index" asp-controller="Employee">
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="button-addon2" name="search" value="@ViewBag.Search">
+        <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
+    </div>
+</form>
+@if (User.IsInRole("Admin"))
+{
+    <a asp-action="Add" asp-controller="Employee" class="btn btn-primary">Create</a>
+}
 <table class="table">
     <thead>
-        <tr>
-            <th>
-                First Name
-            </th>
-            <th>
-                Last Name
-            </th>
-            <th>
-                Email
-            </th>
-            <th>
-                Landline Phone
-            </th>
-            <th>
-                Mobile Phone
-            </th>
-            <th>
-                Service
-            </th>
-            <th>
-                Site
-            </th>
+    <tr>
+        <th>
+            First Name
+        </th>
+        <th>
+            Last Name
+        </th>
+        <th>
+            Email
+        </th>
+        <th>
+            Landline Phone
+        </th>
+        <th>
+            Mobile Phone
+        </th>
+        <th>
+            Service
+        </th>
+        <th>
+            Site
+        </th>
+        @if (User.IsInRole("Admin"))
+        {
             <th>
                 Actions
             </th>
-        </tr>
+        }
+    </tr>
     </thead>
     <tbody>
-        @foreach (Employee employee in Model)
-        {
-            <tr>
+    @foreach (Employee employee in Model)
+    {
+        <tr>
+            <td class="align-middle">
+                @Html.DisplayFor(modelItem => employee.FirstName)
+            </td>
+            <td class="align-middle">
+                @Html.DisplayFor(modelItem => employee.LastName)
+            </td>
+            <td class="align-middle">
+                @Html.DisplayFor(modelItem => employee.Email)
+            </td>
+            <td class="align-middle">
+                @Html.DisplayFor(modelItem => employee.LandlinePhone)
+            </td>
+            <td class="align-middle">
+                @Html.DisplayFor(modelItem => employee.MobilePhone)
+            </td>
+            <td class="align-middle">
+                @Html.DisplayFor(modelItem => employee.Service.Name)
+            </td>
+            <td class="align-middle">
+                @Html.DisplayFor(modelItem => employee.Site.City)
+            </td>
+            @if (User.IsInRole("Admin"))
+            {
                 <td>
-                    @Html.DisplayFor(modelItem => employee.FirstName)
+                    <form method="post" asp-action="Delete" asp-route-id="@employee.Id">
+                        <div class="btn-group" role="group">
+                            <a asp-action="Edit" class="btn btn-success" asp-route-id="@employee.Id">
+                                <i class="bi bi-pencil-fill"></i>
+                            </a>
+                            <button type="submit" class="btn btn-danger" @(User.FindFirstValue(ClaimTypes.NameIdentifier) == employee.Id.ToString() ? "disabled" : "")>
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        </div>
+                    </form>
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => employee.LastName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => employee.Email)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => employee.LandlinePhone)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => employee.MobilePhone)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => employee.Service.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => employee.Site.City)
-                <td>
-                    <a asp-action="" asp-route-id="@employee.Id">Edit</a> |
-                    <a asp-action="" asp-route-id="@employee.Id">Details</a> |
-                    <a asp-action="" asp-route-id="@employee.Id">Delete</a>
-                </td>
-            </tr>
-        }
+            }
+        </tr>
+    }
     </tbody>
 </table>

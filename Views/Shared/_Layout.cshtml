@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/CompanyHub.styles.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
 </head>
 <body>
 <header>
@@ -26,20 +27,29 @@
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                     </li>
                 </ul>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person"></i>
+                                @User.Identity.Name
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <form method="post" asp-controller="Home" asp-action="Logout">
+                                        <input class="dropdown-item" type="submit" value="Logout"/>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                }
+                else
+                {
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Login">Login</a>
+                }
             </div>
-            @if (User.Identity.IsAuthenticated)
-            {
-                <span class="navbar-text">
-                    @User.Identity.Name
-                </span>
-                <form method="post" asp-controller="Home" asp-action="Logout">
-                    <input class="btn btn-primary" type="submit" value="Logout"/>
-                </form>
-            }
-            else
-            {
-                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Login">Login</a>
-            }
         </div>
     </nav>
 </header>
