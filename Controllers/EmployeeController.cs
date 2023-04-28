@@ -34,7 +34,7 @@ public class EmployeeController : Controller
         ViewBag.PageCount = Math.Ceiling((double)ViewBag.EmployeeCount / 10);
 
         if (page > ViewBag.PageCount && ViewBag.PageCount != 0)
-            return RedirectToAction("Index", new { page = ViewBag.PageCount, search });
+            return RedirectToAction("Index", new { page = ViewBag.PageCount, search, service, site });
 
         var employees = await _employeeService.ListWithFilter(filters, page);
 
