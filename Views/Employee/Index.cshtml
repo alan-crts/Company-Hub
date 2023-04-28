@@ -21,7 +21,7 @@
             <option value="">Choisir un site</option>
             @foreach (Site site in ViewBag.Sites)
             {
-                <option value="@site.Id" selected="@(ViewBag.Site == site.Id)">@site.City</option>
+                <option value="@site.Id" selected="@(ViewBag.Site == site.Id)">@site.City (@site.Description)</option>
             }
         </select>
         <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Chercher</button>
@@ -87,7 +87,7 @@
                 @Html.DisplayFor(modelItem => employee.Service.Name)
             </td>
             <td class="align-middle text-center">
-                @Html.DisplayFor(modelItem => employee.Site.City)
+                @Html.DisplayFor(modelItem => employee.Site.City) (@Html.DisplayFor(modelItem => employee.Site.Description))
             </td >
             @if (User.IsInRole("Admin"))
             {

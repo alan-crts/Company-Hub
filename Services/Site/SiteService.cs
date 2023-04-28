@@ -29,6 +29,7 @@ public class SiteService : ISiteService
                 .Include(s => s.Employees)
                 .Where(
                     s => s.City.ToLower().Contains(search.ToLower())
+                    || s.Description.ToLower().Contains(search.ToLower())
                 )
                 .Skip((page - 1) * 10)
                 .Take(10)
@@ -52,6 +53,7 @@ public class SiteService : ISiteService
                 .Include(s => s.Employees)
                 .Where(
                     s => s.City.ToLower().Contains(search.ToLower())
+                    || s.Description.ToLower().Contains(search.ToLower())
                 )
                 .CountAsync();
         }
