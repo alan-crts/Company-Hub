@@ -49,6 +49,16 @@ public class EmployeeController : Controller
     }
 
     [HttpGet]
+    [Route("/Employee/Details/{id}")]
+    public async Task<IActionResult> Details(int id)
+    {
+        var employee = await _employeeService.GetById(id);
+        if (employee == null) return NotFound();
+
+        return View(employee);
+    }
+    
+    [HttpGet]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create()
     {

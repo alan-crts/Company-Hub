@@ -78,6 +78,9 @@
                         <li class="page-item">
                             <a class="page-link" href="@Url.Action("Index", "Service", new { page = 1, search = ViewBag.Search })">1</a>
                         </li>
+                    }
+                    @if (ViewBag.Page - 3 > 1)
+                    {
                         <li class="page-item disabled">
                             <a class="page-link" href="#">...</a>
                         </li>
@@ -93,6 +96,9 @@
                         <li class="page-item disabled">
                             <a class="page-link" href="#">...</a>
                         </li>
+                    }
+                    @if (ViewBag.Page + 3 <= ViewBag.PageCount)
+                    {
                         <li class="page-item">
                             <a class="page-link" href="@Url.Action("Index", "Service", new { page = ViewBag.PageCount, search = ViewBag.Search })">@ViewBag.PageCount</a>
                         </li>

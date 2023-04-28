@@ -1,0 +1,16 @@
+@model Employee
+
+@{
+    ViewBag.Title = "Détails de l'employé";
+    Layout = "_Layout";
+}
+
+<h2>Détails de l'employé</h2>
+
+<p>@Html.DisplayNameForInnerType((Employee e) => e.FirstName): @Model.FirstName</p>
+<p>@Html.DisplayNameForInnerType((Employee e) => e.LastName): @Model.LastName</p>
+<p>@Html.DisplayNameForInnerType((Employee e) => e.Email): @Model.Email</p>
+<p>@Html.DisplayNameForInnerType((Employee e) => e.LandlinePhone): @Model.LandlinePhone</p>
+<p>@Html.DisplayNameForInnerType((Employee e) => e.MobilePhone): @Model.MobilePhone</p>
+<p>@Html.DisplayNameForInnerType((Employee e) => e.Service): @Model.Service.Name</p>
+<p>@Html.DisplayNameForInnerType((Employee e) => e.Site): @Model.Site.City (@Model.Site.Description)</p>

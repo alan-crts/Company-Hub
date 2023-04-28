@@ -56,12 +56,9 @@
         <th class="text-center">
             @Html.DisplayNameForInnerType((Employee e) => e.Site)
         </th>
-        @if (User.IsInRole("Admin"))
-        {
-            <th class="text-end">
-                Actions
-            </th>
-        }
+        <th class="text-end">
+            Actions
+        </th>
     </tr>
     </thead>
     <tbody>
@@ -89,21 +86,27 @@
             <td class="align-middle text-center">
                 @Html.DisplayFor(modelItem => employee.Site.City) (@Html.DisplayFor(modelItem => employee.Site.Description))
             </td >
-            @if (User.IsInRole("Admin"))
-            {
-                <td class="align-middle text-end">
-                    <form method="post" asp-action="Delete" asp-route-id="@employee.Id">
-                        <div class="btn-group" role="group">
-                            <a asp-action="Edit" class="btn btn-success" asp-route-id="@employee.Id">
-                                <i class="bi bi-pencil-fill"></i>
-                            </a>
-                            <button type="submit" class="btn btn-danger" @(User.FindFirstValue(ClaimTypes.NameIdentifier) == employee.Id.ToString() ? "disabled" : "")>
-                                <i class="bi bi-trash-fill"></i>
-                            </button>
-                        </div>
-                    </form>
-                </td>
-            }
+            <td class="align-middle text-center">
+                <div class="d-flex justify-content-end">
+                    <a asp-action="Details" class="btn btn-primary me-2" asp-controller="Employee" asp-route-id="@employee.Id">
+                        <i class="bi bi-eye-fill"></i>
+                    </a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <form method="post" asp-action="Delete" asp-route-id="@employee.Id">
+                            <div class="btn-group" role="group">
+                                <a asp-action="Edit" class="btn btn-success" asp-route-id="@employee.Id">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+                                <button type="submit" class="btn btn-danger" @(User.FindFirstValue(ClaimTypes.NameIdentifier) == employee.Id.ToString() ? "disabled" : "")>
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </td>
+
         </tr>
     }
     </tbody>
@@ -120,6 +123,9 @@
                         <li class="page-item">
                             <a class="page-link" href="@Url.Action("Index", "Employee", new { page = 1, search = ViewBag.Search, service = ViewBag.Service, site = ViewBag.Site })">1</a>
                         </li>
+                    }
+                    @if (ViewBag.Page - 3 > 1)
+                    {
                         <li class="page-item disabled">
                             <a class="page-link" href="#">...</a>
                         </li>
@@ -135,6 +141,9 @@
                         <li class="page-item disabled">
                             <a class="page-link" href="#">...</a>
                         </li>
+                    }
+                    @if (ViewBag.Page + 3 <= ViewBag.PageCount)
+                    {
                         <li class="page-item">
                             <a class="page-link" href="@Url.Action("Index", "Employee", new { page = ViewBag.PageCount, search = ViewBag.Search, service = ViewBag.Service, site = ViewBag.Site })">@ViewBag.PageCount</a>
                         </li>
