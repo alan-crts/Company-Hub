@@ -34,7 +34,9 @@ public class Employee : BaseEntity
     [DisplayName("Téléphone mobile")]
     public string MobilePhone { get; set; }
 
-    [DataType(DataType.Password)] public string? Password { get; set; }
+    [DataType(DataType.Password)] 
+    [DisplayName("Mot de passe")]
+    public string? Password { get; set; }
 
     [DisplayName("Administrateur")] public bool IsAdmin { get; set; }
 

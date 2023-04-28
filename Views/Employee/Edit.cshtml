@@ -67,7 +67,7 @@
         @if (Model.Password.IsNullOrEmpty())
         {
             <div class="mb-3">
-                <label class="form-label" for="Password">L'employé n'a pas de mot de passe<br/>Password:</label>
+                <label class="form-label" for="Password">L'employé n'a pas de mot de passe.<br/>@Html.DisplayNameFor(model => model.Password)</label>
                 <input class="form-control" asp-for="Password"/>
                 <span class="text-danger" asp-validation-for="Password"></span>
             </div>
