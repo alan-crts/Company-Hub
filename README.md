@@ -23,7 +23,7 @@ Le projet comprend les fonctionnalités suivantes :
 
 - Affichage de la liste des employés de l'entreprise avec leurs informations et CRUD
 - Affichage de la liste des services et CRUD
-- Affichage de la liste des sites et CRUC
+- Affichage de la liste des sites et CRUD
 - Recherche d'employés par nom, numéro de téléphone mobile/fix et adresse mail
 
 ## Technologies utilisées
