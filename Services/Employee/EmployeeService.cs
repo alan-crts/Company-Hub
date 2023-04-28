@@ -23,13 +23,32 @@ public class EmployeeService : IEmployeeService
         {
             var search = filters["search"];
             search = search.Trim();
-            employees = employees.Where(
-                e => e.FirstName.ToLower().Contains(search.ToLower())
-                     || e.LastName.ToLower().Contains(search.ToLower())
-                     || e.Email.ToLower().Contains(search.ToLower())
-                     || e.LandlinePhone.ToLower().Contains(search.ToLower())
-                     || e.MobilePhone.ToLower().Contains(search.ToLower())
-            );
+            string firstName = search;
+            string lastName = search;
+            if(search.Split(" ").Length > 1)
+            {
+                 firstName = search.Split(" ")[0];
+                 lastName = search.Split(" ")[1];
+                 
+                 employees = employees.Where(
+                     e => (e.FirstName.ToLower().Contains(firstName.ToLower())
+                           && e.LastName.ToLower().Contains(lastName.ToLower()))
+                          || e.Email.ToLower().Contains(search.ToLower())
+                          || e.LandlinePhone.ToLower().Contains(search.ToLower())
+                          || e.MobilePhone.ToLower().Contains(search.ToLower())
+                 );
+            }
+            else
+            {
+                employees = employees.Where(
+                    e => e.FirstName.ToLower().Contains(search.ToLower())
+                         || e.LastName.ToLower().Contains(search.ToLower())
+                         || e.Email.ToLower().Contains(search.ToLower())
+                         || e.LandlinePhone.ToLower().Contains(search.ToLower())
+                         || e.MobilePhone.ToLower().Contains(search.ToLower())
+                );
+            }
+                
         }
 
         if (filters.ContainsKey("service"))
@@ -72,13 +91,31 @@ public class EmployeeService : IEmployeeService
         {
             var search = filters["search"];
             search = search.Trim();
-            employees = employees.Where(
-                e => e.FirstName.ToLower().Contains(search.ToLower())
-                     || e.LastName.ToLower().Contains(search.ToLower())
-                     || e.Email.ToLower().Contains(search.ToLower())
-                     || e.LandlinePhone.ToLower().Contains(search.ToLower())
-                     || e.MobilePhone.ToLower().Contains(search.ToLower())
-            );
+            string firstName = search;
+            string lastName = search;
+            if(search.Split(" ").Length > 1)
+            {
+                firstName = search.Split(" ")[0];
+                lastName = search.Split(" ")[1];
+                
+                employees = employees.Where(
+                    e => (e.FirstName.ToLower().Contains(firstName.ToLower())
+                          && e.LastName.ToLower().Contains(lastName.ToLower()))
+                         || e.Email.ToLower().Contains(search.ToLower())
+                         || e.LandlinePhone.ToLower().Contains(search.ToLower())
+                         || e.MobilePhone.ToLower().Contains(search.ToLower())
+                );
+            }
+            else
+            {
+                employees = employees.Where(
+                    e => e.FirstName.ToLower().Contains(search.ToLower())
+                         || e.LastName.ToLower().Contains(search.ToLower())
+                         || e.Email.ToLower().Contains(search.ToLower())
+                         || e.LandlinePhone.ToLower().Contains(search.ToLower())
+                         || e.MobilePhone.ToLower().Contains(search.ToLower())
+                );
+            }
         }
 
         if (filters.ContainsKey("service"))

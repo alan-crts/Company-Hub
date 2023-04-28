@@ -1,4 +1,5 @@
 using CompanyHub.Context;
+using CompanyHub.Data;
 using CompanyHub.Services;
 using CompanyHub.Services.Employee;
 using CompanyHub.Services.Service;
@@ -27,9 +28,28 @@ builder.Services.AddScoped<IHashService, HashService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
 builder.Services.AddScoped<ISiteService, SiteService>();
+builder.Services.AddTransient<DataSeeder>();
 
 var app = builder.Build();
 app.UseStatusCodePagesWithReExecute("/error/{0}");
+
+if (args.Length == 1 && args[0].ToLower() == "seeddata")
+    SeedData(app);
+
+void SeedData(WebApplication app)
+{
+    var scopedFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
+
+    using (var scope = scopedFactory.CreateScope())
+    {
+        var seeder = scope.ServiceProvider.GetService<DataSeeder>();
+        seeder.SeedData();
+        
+        Console.WriteLine("Data seeded");
+        System.Environment.Exit(0);
+    }
+}
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
